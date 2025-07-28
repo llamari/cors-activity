@@ -41,8 +41,19 @@ const chartConfig = {
 
 export function Dashboard() {
     const [userName, setUserName] = useState("Gabriel");
+    const [productsEnding, setProductsEnding] = useState(["Arroz", "Feijão", "Macarrão", "Óleo"]);
+    const [productsSold, setProductsSold] = useState(["Arroz", "Feijão", "Leite"]);
+    const [toPayToday, setToPayToday] = useState(200.00);
+    const [toReceiveToday, setToReceiveToday] = useState(200.00);
+    const [soldToday, setSoldToday] = useState(200.00);
+    const [soldThisMonth, setSoldThisMonth] = useState(200.00);
     const [open, setOpen] = useState(false)
     const [date, setDate] = useState<Date | undefined>(new Date());
+    const [openMenu, setOpenMenu] = useState(false)
+
+    function toggleMenu() {
+        setOpenMenu((prev) => !prev)
+    }
 
     const comparison = useMemo(() => {
         let lastMonth = 0;
@@ -64,9 +75,9 @@ export function Dashboard() {
 
     return (
         <div className="bg-tsl-bg min-h-screen flex flex-col items-center pb-40">
-            <header className="bg-tsl-header min-w-screen h-20 flex items-center justify-between px-8">
+            <header className="bg-tsl-header w-full max-w-screen h-20 flex items-center justify-between px-8 overflow-hidden">
                 <div className="flex items-center">
-                    <Menu className="text-white cursor-pointer" size={40} />
+                    <Menu className="text-white cursor-pointer" size={40} onClick={() => toggleMenu()} />
                     <img src={icon} alt="Logo" className="h-12 w-12 inline-block ml-2" />
                 </div>
                 <div className="flex items-center space-x-6">
@@ -80,6 +91,21 @@ export function Dashboard() {
                     <Settings className="text-white" size={40} />
                 </div>
             </header>
+            <div
+                className={`bg-tsl-header w-full overflow-hidden transition-all duration-500 ease-in-out flex flex-col items-center justify-between ${openMenu ? "max-h-60 py-4" : "max-h-0 py-0 border-none"
+                    }`}
+            >
+                <div className="border-t border-white w-80 mb-4" />
+                <div className="flex flex-wrap justify-evenly items-center text-white text-lg w-full gap-4">
+                    <p className="hover:underline cursor-pointer">Gestão de Vendas</p>
+                    <p className="hover:underline cursor-pointer">Gestão de Estoque</p>
+                    <p className="hover:underline cursor-pointer">Gestão de Compras</p>
+                    <p className="hover:underline cursor-pointer">Gestão Financeira</p>
+                    <p className="hover:underline cursor-pointer">Gestão de Usuários</p>
+                    <p className="hover:underline cursor-pointer">Ponto Eletrônico</p>
+                </div>
+            </div>
+
 
             {/* Dashboard */}
             <div className="mt-20 w-8/12 flex flex-col items-start">
@@ -124,43 +150,62 @@ export function Dashboard() {
                         <div className="w-full">
                             <div className="bg-tsl-header rounded-lg p-4 text-white flex flex-col justify-between w-full">
                                 <p className="text-2xl text-left">A receber hoje:</p>
-                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R$200,00</p>
-                                <span className="flex items-center gap-1 text-tsl-orange">Ver mais detalhes <ArrowRight /></span>
+                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R${toReceiveToday}</p>
+                                <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                    Ver mais detalhes
+                                    <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                                </span>
                             </div>
                             <div className="bg-tsl-header rounded-lg p-4 text-white flex flex-col justify-between w-full mt-5">
                                 <p className="text-2xl text-left">A pagar hoje:</p>
-                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R$200,00</p>
-                                <span className="flex items-center gap-1 text-tsl-orange">Ver mais detalhes <ArrowRight /></span>
+                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R${toPayToday}</p>
+                                <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                    Ver mais detalhes
+                                    <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                                </span>
                             </div>
                         </div>
                         <div className="w-full h-full bg-tsl-header rounded-lg p-4 text-white flex flex-col justify-between text-left">
                             <span className="text-2xl flex items-center gap-1 text-tsl-orange">Estoque crítico</span>
-                            <p className="text-xl">4 produtos abaixo do mínimo:</p>
-                            <p>1. Arroz</p>
-                            <p>2. Leite</p>
-                            <p>3. Café</p>
-                            <p>4. Açúcar</p>
-                            <span className="flex items-center gap-1 text-tsl-orange">Ver mais detalhes <ArrowRight /></span>
+                            <p className="text-xl">{productsEnding.length} produtos abaixo do mínimo:</p>
+                            {
+                                productsEnding.map((product, index) => (
+                                    <p key={index}>{index + 1}. {product}</p>
+                                ))
+                            }
+                            <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                Ver mais detalhes
+                                <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                            </span>
                         </div>
                     </div>
                     <div className="mt-10 w-full bg-tsl-header rounded-lg p-4 text-white grid grid-cols-2 gap-4">
                         <div>
                             <div className="p-4 flex flex-col justify-between w-full">
                                 <p className="text-2xl text-left">Vendas do dia:</p>
-                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R$200,00</p>
-                                <span className="flex items-center gap-1 text-tsl-orange">Ver mais detalhes <ArrowRight /></span>
+                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R${soldToday}</p>
+                                <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                    Ver mais detalhes
+                                    <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                                </span>
                             </div>
                             <div className="p-4 flex flex-col justify-between w-full">
                                 <p className="text-2xl text-left">Vendas do mês:</p>
-                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R$200,00</p>
-                                <span className="flex items-center gap-1 text-tsl-orange">Ver mais detalhes <ArrowRight /></span>
+                                <p className="text-3xl text-left mb-1.5" style={{ fontWeight: '300' }}>R${soldThisMonth}</p>
+                                <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                    Ver mais detalhes
+                                    <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                                </span>
                             </div>
                             <div className="p-4 pb-0 flex flex-col justify-between w-full text-left">
                                 <p className="text-2xl text-left">Produtos mais vendidos:</p>
-                                <p className="text-lg font-light">1. Arroz</p>
-                                <p className="text-lg font-light">2. Leite</p>
-                                <p className="text-lg font-light">3. Café</p>
-                                <span className="flex items-center gap-1 text-tsl-orange">Ver mais detalhes <ArrowRight /></span>
+                                {productsSold.map((product, index) => (
+                                    <p key={index} className="text-lg font-light">{index + 1}. {product}</p>
+                                ))}
+                                <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                    Ver mais detalhes
+                                    <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                                </span>
                             </div>
                         </div>
                         <div className="w-full h-full flex flex-col items-center justify-between pt-4">
@@ -222,11 +267,14 @@ export function Dashboard() {
                                                     stroke="white"
                                                 />
                                             )
-                                        }} 
+                                        }}
                                     />
                                 </LineChart>
                             </ChartContainer>
-                            <span className="w-full flex items-center gap-1 text-tsl-orange text-left">Ver mais detalhes <ArrowRight /></span>
+                            <span className="w-full flex items-center gap-1 group text-tsl-orange text-left hover:underline cursor-pointer">
+                                Ver mais detalhes
+                                <ArrowRight className="text-tsl-orange transition-all duration-300 ease-in-out group-hover:translate-x-1" />
+                            </span>
                         </div>
                     </div>
                 </div>
