@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Frontend em 3000</title>
+</head>
+<body>
+    <h1>Cliente (Origem: 3000)</h1>
+    <p>Tentando acessar a API (Origem: 8080)</p>
+    <button onclick="fazerRequisicao()">Acessar API</button>
+    <pre id="resultado"></pre>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/mensagem';
+        const resultadoElement = document.getElementById('resultado');
+
+        async function fazerRequisicao() {
+            try {
+                const response = await fetch(API_URL);
+                
+                const data = await response.json();
+                resultadoElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultadoElement.textContent = 'Erro na requisição. Cheque o console do navegador para mais detalhes.';
+                console.log('Erro na requisição:', error);
+            }
+        }
+    </script>
+</body>
+</html>
